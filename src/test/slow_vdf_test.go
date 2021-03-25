@@ -30,9 +30,9 @@ func TestCreateProofCSV(t *testing.T) {
 		T, _ := strconv.Atoi(line[1])
 		P := line[2]
 
-		y_buf, proof_buf := vdf_go.GenerateVDF(seed, T, 2048)
-		proof := hex.EncodeToString(append(y_buf, proof_buf...))
-		assert.Equal(t, P, proof, "iteration %d", T)
+		res := vdf_go.GenerateVDF(seed, T, 2048)
+		//proof := hex.EncodeToString(append(y_buf, proof_buf...))
+		assert.Equal(t, P, res, "iteration %d", T)
 		log.Print(fmt.Sprintf("Test case %d good, iteration = %d", i, T))
 
 	}
