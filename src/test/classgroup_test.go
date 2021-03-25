@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"math/big"
-	"github.com/harmony-one/vdf/src/vdf_go"
+	"github.com/GeekyLumberjack/vdf/src/vdf_go"
 )
 
 func TestClassDiscriminant(t *testing.T) {

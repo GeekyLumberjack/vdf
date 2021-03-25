@@ -1,5 +1,8 @@
 package vdf_go
 
+import ("os/exec"
+		"fmt")
+
 // VDF is the struct holding necessary state for a hash chain delay function.
 type VDF struct {
 	difficulty int
@@ -32,10 +35,12 @@ func (vdf *VDF) GetOutputChannel() chan [516]byte {
 func (vdf *VDF) Execute() {
 	vdf.finished = false
 
-	yBuf, proofBuf := GenerateVDF(vdf.input[:], vdf.difficulty, sizeInBits)
-
-	copy(vdf.output[:], yBuf)
-	copy(vdf.output[258:], proofBuf)
+	cmdOutput, err := exec.Command("vdf-cli", string(vdf.input[:]), string(vdf.difficulty), "-l ",string(sizeInBits)).Output()
+	//yBuf, proofBuf := GenerateVDF(vdf.input[:], vdf.difficulty, sizeInBits)
+	fmt.Printf("%s", err)
+	//f//mt.Printf("%s", cmdOutput)
+	copy(vdf.output[:], cmdOutput)
+	//copy(vdf.output[258:], proofBuf)
 
 	go func() {
 		vdf.outputChan <- vdf.output
@@ -47,7 +52,16 @@ func (vdf *VDF) Execute() {
 // Verify runs the verification of generated proof
 // currently on i7-6700K, verification takes about 350 ms
 func (vdf *VDF) Verify(proof [516]byte) bool {
-	return VerifyVDF(vdf.input[:], proof[:], vdf.difficulty, sizeInBits)
+	cmdOutput, err := exec.Command("vdf-cli", string(vdf.input[:]), string(vdf.difficulty), string(proof[:]), "-l ",string(sizeInBits)).Output()
+	fmt.Printf("%s", cmdOutput)
+	fmt.Printf("%s", err)
+	if (string(cmdOutput) == "Proof is valid"){
+		return true
+	}
+	
+	return false
+	
+	//return VerifyVDF(vdf.input[:], proof[:], vdf.difficulty, sizeInBits)
 }
 
 // IsFinished returns whether the vdf execution is finished or not.
