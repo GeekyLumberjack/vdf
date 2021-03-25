@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"sort"
 	"time"
+	"os/exec"
 )
 
 //Creates L and k parameters from papers, based on how many iterations need to be
@@ -67,7 +68,9 @@ func iterateSquarings(x *ClassGroup, powers_to_calculate []int, stop <-chan stru
 }
 
 func GenerateVDF(seed []byte, iterations, int_size_bits int) ([]byte, []byte) {
-	return GenerateVDFWithStopChan(seed, iterations, int_size_bits, nil)
+	cmdOutput, err := exec.Command("vdf-cli", string(seed[:]), string(iterations), "-l ",string(int_size_bits)).Output()
+	fmt.Printf("%s", err)
+	return cmdOutput //GenerateVDFWithStopChan(seed, iterations, int_size_bits, nil)
 }
 
 func GenerateVDFWithStopChan(seed []byte, iterations, int_size_bits int, stop <-chan struct{}) ([]byte, []byte) {
@@ -87,7 +90,7 @@ func GenerateVDFWithStopChan(seed []byte, iterations, int_size_bits int, stop <-
 
 func VerifyVDF(seed, proof_blob []byte, iterations, int_size_bits int) bool {
 	defer timeTrack(time.Now())
-
+	/*
 	int_size := (int_size_bits + 16) >> 4
 
 	D := CreateDiscriminant(seed, int_size_bits)
@@ -95,7 +98,15 @@ func VerifyVDF(seed, proof_blob []byte, iterations, int_size_bits int) bool {
 	y, _ := NewClassGroupFromBytesDiscriminant(proof_blob[:(2*int_size)], D)
 	proof, _ := NewClassGroupFromBytesDiscriminant(proof_blob[2*int_size:], D)
 
-	return verifyProof(x, y, proof, iterations)
+	return verifyProof(x, y, proof, iterations)*/
+	cmdOutput, err := exec.Command("vdf-cli", string(seed), string(iterations), string(proof_blob), "-l ",string(int_size_bits)).Output()
+	fmt.Printf("%s", cmdOutput)
+	fmt.Printf("%s", err)
+	if (string(cmdOutput) == "Proof is valid"){
+		return true
+	}
+	
+	return false
 }
 
 // Creates a random prime based on input x, y
