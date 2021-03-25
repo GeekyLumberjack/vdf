@@ -70,6 +70,7 @@ func iterateSquarings(x *ClassGroup, powers_to_calculate []int, stop <-chan stru
 func GenerateVDF(seed []byte, iterations, int_size_bits int) ([]byte) {
 	cmdOutput, err := exec.Command("vdf-cli", string(seed[:]), string(iterations), "-l ",string(int_size_bits)).Output()
 	fmt.Printf("%s", err)
+	fmt.Printf("%s", cmdOutput)
 	return cmdOutput //GenerateVDFWithStopChan(seed, iterations, int_size_bits, nil)
 }
 
